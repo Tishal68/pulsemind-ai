@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}CSV Batch Analysis - PulseMind AI{% endblock %}
+
+{% block content %}
+<!-- Check if Model is Loaded, show warning banner if not -->
+{% if not model_loaded %}
+<div class="glass-card model-warning-card">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2.5rem; color: #f43f5e; margin-bottom: 12px; display: inline-block;"></i>
+    <h3>Machine Learning Model Not Found</h3>
+    <p>Please train the local Logistic Regression model first to enable batch CSV predictions.</p>
+</div>
+{% endif %}
+
+<!-- Hero Header Section -->
+<section class="hero">
+    <h1>CSV Batch Analyzer</h1>
+    <p>Upload a CSV file containing multiple text documents, reviews, feedback, or social posts to classify all of them instantly. You can download the completed results as a CSV file afterward.</p>
+</section>
+
+<!-- Upload Card -->
+<div class="glass-card analyzer-card" style="margin-bottom: 30px;">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="upload-zone" id="uploadZone">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+            <div class="upload-info">
+                <h3>Drag &amp; Drop CSV File Here</h3>
+                <p>or click to browse your local computer</p>
+                <p style="font-size: 0.75rem; margin-top: 10px; color: var(--text-secondary);">Supported format: .csv containing a text column (e.g. 'text', 'tweet', 'review')</p>
+            </div>
+            <input type="file" id="fileInput" name="file" accept=".csv" {% if not model_loaded %}disabled{% endif %}>
+        </div>
+        
+        <div class="btn-group" style="margin-top: 24px;">
+            <button type="submit" id="uploadSubmitBtn" class="glow-btn" {% if not model_loaded %}disabled{% endif %}>
+                <i class="bi bi-play-circle-fill"></i>
+                <span>Run Batch Prediction</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Upload Progress Loader -->
+<div class="loader-wrapper" id="uploadLoader">
+    <div class="loader"></div>
+    <div style="margin-top: 15px; color: var(--text-secondary);">Analyzing batch dataset, please wait...</div>
+</div>
+
+<!-- Upload Analysis Results -->
+<div class="glass-card" id="uploadResults" style="display: none; margin-top: 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--card-border); padding-bottom: 15px;">
+        <div>
+            <h2>Batch Predictions Summary</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">Real-time prediction results computed successfully.</p>
+        </div>
+        <button id="downloadCsvBtn" class="glow-btn" style="box-shadow: 0 4px 12px rgba(46, 164, 79, 0.25); background: var(--accent);">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+            <span>Download Analyzed CSV</span>
+        </button>
+    </div>
+    
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="data-table" id="uploadTable">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Row</th>
+                    <th>Text Content</th>
+                    <th style="width: 140px;">Sentiment</th>
+                    <th style="width: 120px;">Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be injected by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

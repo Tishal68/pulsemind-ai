@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyze Text - PulseMind AI{% endblock %}
+
+{% block content %}
+<!-- Check if Model is Loaded, show warning banner if not -->
+{% if not model_loaded %}
+<div class="glass-card model-warning-card">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2.5rem; color: #f43f5e; margin-bottom: 12px; display: inline-block;"></i>
+    <h3>Machine Learning Model Not Found</h3>
+    <p>The sentiment prediction model has not been trained on your local system yet.</p>
+    <p style="margin-top: 10px;">Please download a sentiment CSV dataset, place it at <code>dataset/twitter.csv</code>, and execute: </p>
+    <p style="margin-top: 10px;"><code>python train_model.py</code></p>
+</div>
+{% endif %}
+
+<!-- Hero Header Section -->
+<section class="hero">
+    <h1>PulseMind AI</h1>
+    <p style="margin-top: 15px; margin-bottom: 15px;">Analyze emotions, opinions, and customer sentiment using advanced Natural Language Processing and Machine Learning. Gain meaningful insights from social media posts, reviews, feedback, and textual data through an elegant AI-powered analytics platform.</p>
+    <p style="margin-top: 10px; font-size: 1.05rem;">
+        <span class="typing-container"></span>
+    </p>
+</section>
+
+<!-- Analyzer Card -->
+<div class="glass-card analyzer-card">
+    <div class="textarea-container">
+        <textarea 
+            id="tweetInput" 
+            class="tweet-textarea" 
+            placeholder="Type or paste a social media post, customer review, product feedback, article, message, or text up to 10,000 characters here..." 
+            maxlength="10000"
+            {% if not model_loaded %}disabled{% endif %}
+        ></textarea>
+        <div class="char-counter"><span id="charCount">0</span>/10000</div>
+    </div>
+    
+    <!-- Example Preset Texts -->
+    <div class="examples-grid">
+        <button class="example-btn" data-tweet="I absolutely love this new application! The interface is so smooth and clean. 😊" {% if not model_loaded %}disabled{% endif %}>😊 Positive Review</button>
+        <button class="example-btn" data-tweet="Just waiting at the airport. My flight has been delayed by 2 hours. Super annoying. 🙄" {% if not model_loaded %}disabled{% endif %}>😡 Negative Feedback</button>
+        <button class="example-btn" data-tweet="Standard morning coffee. Today's weather is cloudy with a light breeze." {% if not model_loaded %}disabled{% endif %}>😐 Neutral Comment</button>
+    </div>
+    
+    <!-- Submit Button Group -->
+    <div class="btn-group">
+        <button id="analyzeBtn" class="glow-btn" {% if not model_loaded %}disabled{% endif %}>
+            <i class="bi bi-cpu-fill"></i>
+            <span>Analyze Sentiment</span>
+        </button>
+    </div>
+</div>
+
+<!-- Loading Animation Wrapper -->
+<div class="loader-wrapper" id="loader">
+    <div class="loader"></div>
+</div>
+
+<!-- Glassmorphism Results Card -->
+<div class="glass-card results-card" id="resultsCard">
+    <div class="result-content">
+        <h3>Analysis Result</h3>
+        
+        <div class="result-emoji" id="resultEmoji">😐</div>
+        <div class="result-sentiment" id="resultSentiment">Neutral</div>
+        
+        <div class="confidence-text">
+            Confidence score: <span id="confidenceValue">0%</span>
+        </div>
+        
+        <!-- Progress bar visualization -->
+        <div class="progress-container">
+            <div class="progress-bar" id="resultProgressBar"></div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-btns">
+            <button id="copyBtn" class="btn-secondary" title="Copy result to clipboard">
+                <i class="bi bi-clipboard"></i>
+                <span>Copy Result</span>
+            </button>
+            <button id="downloadBtn" class="btn-secondary" title="Download text report">
+                <i class="bi bi-download"></i>
+                <span>Download Report</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

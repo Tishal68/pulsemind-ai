@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ error_title | default("Error") }} - PulseMind AI{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 600px; margin: 60px auto; text-align: center; border-color: rgba(244, 63, 94, 0.4); padding: 40px 30px;">
+    <div style="margin-bottom: 24px;">
+        <i class="bi bi-exclamation-octagon-fill" style="font-size: 4rem; color: var(--sentiment-neg); filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.2));"></i>
+    </div>
+    
+    <div style="text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.15em; color: var(--text-secondary); font-weight: 700; margin-bottom: 8px;">
+        Error Code: {{ error_code | default("SYSTEM_ERROR") }}
+    </div>
+    
+    <h1 style="font-size: 2.2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 16px;">
+        {{ error_title | default("Something went wrong") }}
+    </h1>
+    
+    <p style="color: var(--text-secondary); line-height: 1.6; font-size: 1rem; margin-bottom: 30px;">
+        {{ error_message | default("The sentiment analysis engine encountered an unexpected error. Please verify your operation and try again.") }}
+    </p>
+    
+    <div class="btn-group" style="gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a href="/" class="glow-btn">
+            <i class="bi bi-house-door-fill"></i>
+            <span>Return Home</span>
+        </a>
+        <a href="/dashboard" class="btn-secondary">
+            <i class="bi bi-speedometer2"></i>
+            <span>Go to Dashboard</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PulseMind AI - Sentiment Intelligence Platform{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='images/logo-light.svg') }}" id="navbarLogo" alt="PulseMind AI Logo" height="34">
+        </a>
+        
+        <ul class="nav-links">
+            <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+                <a href="/">Home</a>
+            </li>
+            <li class="nav-item {% if request.path == '/upload' %}active{% endif %}">
+                <a href="/upload">Batch Analysis</a>
+            </li>
+            <li class="nav-item {% if request.path == '/dashboard' %}active{% endif %}">
+                <a href="/dashboard">Analytics Dashboard</a>
+            </li>
+            <li class="nav-item {% if request.path == '/about' %}active{% endif %}">
+                <a href="/about">About Engine</a>
+            </li>
+            <li class="nav-item">
+                <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
+                    <i class="bi bi-sun-fill"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 PulseMind AI. Powered by Sentiment Intelligence. | <a href="/about">How it works</a></p>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

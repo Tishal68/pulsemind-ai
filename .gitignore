@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Datasets and local ML binary files
+dataset/twitter.csv
+sentiment_model.pkl
+vectorizer.pkl
+nltk_data/
+
+# SQLite database logs
+predictions.db
+
+# Logs & temporary files
+logs/
+*.log
+
+# Temporary upload and report outputs
+uploads/*
+!uploads/.gitkeep
+reports/*
+!reports/.gitkeep
+
+# IDEs & Operating System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

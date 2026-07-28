@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics Dashboard - PulseMind AI{% endblock %}
+
+{% block content %}
+<!-- Hero Header Section -->
+<section class="hero">
+    <h1>Analytics Dashboard</h1>
+    <p>Monitor real-time sentiment classifications, performance statistics, and historical logs stored in the local SQLite database.</p>
+</section>
+
+<!-- Stats Cards Grid -->
+<div class="stats-grid">
+    <div class="glass-card stat-card">
+        <div class="stat-number" id="totalCount">0</div>
+        <div class="stat-label">Total Analyzed</div>
+    </div>
+    <div class="glass-card stat-card pos">
+        <div class="stat-number" id="posCount">0</div>
+        <div class="stat-label">Positive Texts</div>
+    </div>
+    <div class="glass-card stat-card neut">
+        <div class="stat-number" id="neutCount">0</div>
+        <div class="stat-label">Neutral Texts</div>
+    </div>
+    <div class="glass-card stat-card neg">
+        <div class="stat-number" id="negCount">0</div>
+        <div class="stat-label">Negative Texts</div>
+    </div>
+    <div class="glass-card stat-card">
+        <div class="stat-number" id="avgConfidence">0%</div>
+        <div class="stat-label">Avg Confidence</div>
+    </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="charts-grid">
+    <div class="glass-card">
+        <h3 style="margin-bottom: 15px;"><i class="bi bi-pie-chart-fill" style="color: var(--primary);"></i> Sentiment Distribution</h3>
+        <div class="chart-wrapper">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <h3 style="margin-bottom: 15px;"><i class="bi bi-bar-chart-line-fill" style="color: var(--accent);"></i> Average Confidence %</h3>
+        <div class="chart-wrapper">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Line Chart & Word Cloud Row -->
+<div class="charts-grid" style="margin-bottom: 40px;">
+    <div class="glass-card">
+        <h3 style="margin-bottom: 15px;"><i class="bi bi-graph-up" style="color: var(--primary);"></i> Analysis Trend (Over Time)</h3>
+        <div class="chart-wrapper">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="glass-card">
+        <h3 style="margin-bottom: 15px;"><i class="bi bi-cloud-haze2-fill" style="color: var(--accent);"></i> Frequent Keywords (Word Cloud)</h3>
+        <div class="chart-wrapper">
+            <div id="wordcloudContainer" class="wordcloud-container">
+                <!-- Word cloud elements injected by JS -->
+                <p style="color:var(--text-secondary)">No predictions processed yet</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Prediction History Section -->
+<div class="glass-card history-section">
+    <div class="history-header">
+        <div>
+            <h2>Prediction History</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">Logs of all classifications tracked in the SQLite database.</p>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="/history/export" class="btn-secondary" title="Export database rows to CSV">
+                <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                <span>Export History CSV</span>
+            </a>
+            <button id="clearHistoryBtn" class="btn-secondary" style="border-color: var(--sentiment-neg); color: var(--sentiment-neg);" title="Clear database logs">
+                <i class="bi bi-trash3"></i>
+                <span>Clear All Logs</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="data-table" id="historyTable">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Analyzed Text</th>
+                    <th style="width: 140px;">Predicted Sentiment</th>
+                    <th style="width: 120px;">Confidence</th>
+                    <th style="width: 180px;">Timestamp</th>
+                    <th style="width: 80px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Injected dynamically by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

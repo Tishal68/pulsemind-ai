@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}How It Works - PulseMind AI{% endblock %}
+
+{% block content %}
+<!-- Hero Header Section -->
+<section class="hero">
+    <h1>Machine Learning Pipeline</h1>
+    <p>Explore the step-by-step processing workflow that happens under the hood of our Sentiment Intelligence classification engine.</p>
+</section>
+
+<!-- Interactive ML Workflow Node Layout -->
+<section class="glass-card workflow-section">
+    <h2 style="margin-bottom: 24px; text-align: center;"><i class="bi bi-diagram-3-fill" style="color: var(--primary);"></i> Pipeline Architecture</h2>
+    
+    <div class="workflow-container">
+        <div class="workflow-node">Input Text</div>
+        <div class="workflow-arrow"><i class="bi bi-chevron-right"></i></div>
+        
+        <div class="workflow-node">Cleaning</div>
+        <div class="workflow-arrow"><i class="bi bi-chevron-right"></i></div>
+        
+        <div class="workflow-node">Tokenization</div>
+        <div class="workflow-arrow"><i class="bi bi-chevron-right"></i></div>
+        
+        <div class="workflow-node">Stopwords</div>
+        <div class="workflow-arrow"><i class="bi bi-chevron-right"></i></div>
+        
+        <div class="workflow-node">Stemming</div>
+        <div class="workflow-arrow"><i class="bi bi-chevron-right"></i></div>
+        
+        <div class="workflow-node">TF-IDF</div>
+        <div class="workflow-arrow"><i class="bi bi-chevron-right"></i></div>
+        
+        <div class="workflow-node">Logistic Reg</div>
+        <div class="workflow-arrow"><i class="bi bi-chevron-right"></i></div>
+        
+        <div class="workflow-node" style="border-color: var(--accent); background: var(--accent-glow);">Prediction</div>
+    </div>
+</section>
+
+<!-- Preprocessing & Model Explanation Details -->
+<section class="about-details">
+    <div class="glass-card detail-card">
+        <h3><i class="bi bi-file-earmark-text-fill"></i> 1. Input Text</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            The pipeline accepts a raw string representing a social post, review, or feedback. This input typically contains noisy elements like URLs, username tags, hashtags, emojis, punctuation, and mixed capitalizations.
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card">
+        <h3><i class="bi bi-regex"></i> 2. Regex Cleaning</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            Using Python regular expressions, we strip URLs (<code>https://...</code>), username mentions (<code>@user</code>), hashtag symbols, and non-ASCII character blocks/emojis. We then convert all remaining characters to lowercase to prevent casing duplicates (e.g., "Great" and "great").
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card">
+        <h3><i class="bi bi-scissors"></i> 3. Tokenization</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            The string is broken down into a sequence of individual words or symbols (called tokens) using NLTK's <code>word_tokenize</code> parser, facilitating word-level processing.
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card">
+        <h3><i class="bi bi-funnel-fill"></i> 4. Stopword Removal</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            High-frequency words like "is", "the", "and", "at" that carry little to no emotional sentiment are filtered out using the Natural Language Toolkit (NLTK) English stopwords dictionary.
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card">
+        <h3><i class="bi bi-tree-fill"></i> 5. Porter Stemming</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            We apply the Porter Stemmer algorithm to reduce each token to its core root form. For example, "happiest", "happier", and "happy" are all mapped to the stem root <code>happi</code>, grouping words with the same core semantic meaning.
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card">
+        <h3><i class="bi bi-hash"></i> 6. TF-IDF Vectorization</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            Term Frequency-Inverse Document Frequency. Transforms the sequence of processed tokens into numerical arrays. It measures how frequent a word is in a single text document relative to how common or rare it is across the entire training dataset.
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card">
+        <h3><i class="bi bi-calculator-fill"></i> 7. Logistic Regression</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            A supervised Machine Learning classifier. It uses the numeric TF-IDF vectors to fit a linear mathematical decision boundary, estimating log-odds probabilities to determine which sentiment category a text belongs to.
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card" style="border-color: var(--accent);">
+        <h3><i class="bi bi-trophy-fill" style="color: var(--accent);"></i> 8. Final Prediction</h3>
+        <p style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            The category (Positive, Neutral, or Negative) with the highest predicted probability is returned. The probability score is converted to a confidence percentage and outputted alongside the corresponding category emoji.
+        </p>
+    </div>
+    
+    <div class="glass-card detail-card" style="grid-column: span 2;">
+        <h3><i class="bi bi-briefcase-fill" style="color: var(--primary);"></i> Real-Time Analytics &amp; Business Applications</h3>
+        <p style="color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem;">
+            PulseMind AI turns unstructured text data into actionable business intelligence:
+            <br><br>
+            • <strong>Customer Feedback loop</strong>: Automatically monitor customer satisfaction trends from product reviews, tickets, and emails.
+            <br>
+            • <strong>Brand Health Monitoring</strong>: Track positive, neutral, and negative public mentions of your product or company in real-time.
+            <br>
+            • <strong>Market Research</strong>: Analyze competitor reviews to identify strengths and weaknesses.
+            <br>
+            • <strong>Automation</strong>: Route urgent negative customer queries immediately to support agents based on sentiment priority scores.
+        </p>
+    </div>
+</section>
+{% endblock %}
