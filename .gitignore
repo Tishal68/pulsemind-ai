@@ -9,10 +9,8 @@ venv/
 env/
 ENV/
 
-# Datasets and local ML binary files
+# Datasets & downloaded corpora
 dataset/twitter.csv
-sentiment_model.pkl
-vectorizer.pkl
 nltk_data/
 
 # SQLite database logs

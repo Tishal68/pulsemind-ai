@@ -211,7 +211,8 @@ The script will split the dataset (**80% Train / 20% Test**), output classificat
 - `reports/evaluation.txt`
 
 > [!NOTE]
-> `sentiment_model.pkl`, `vectorizer.pkl`, and `predictions.db` are generated locally during step 3 and runtime. They are intentionally **excluded from GitHub** via `.gitignore` to keep the repository lightweight and clean.
+> Pre-trained model pipeline binaries (`sentiment_model.pkl` and `vectorizer.pkl`) are included in the repository (~1.5 MB total) to enable **instant, zero-configuration deployment on Render.com** without build lag. The raw dataset (`dataset/twitter.csv`) and SQLite runtime logs (`predictions.db`) remain strictly excluded from GitHub via `.gitignore`.
+
 
 ---
 
