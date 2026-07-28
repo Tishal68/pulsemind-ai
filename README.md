@@ -1,38 +1,13 @@
 # PulseMind AI 🧠💼
 ### AI-Powered Sentiment Intelligence Platform
 
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0.0-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3+-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.style=for-the-badge)](LICENSE)
-[![Status: Active](https://img.shields.io/badge/Status-Production%20Ready-2ea44f?style=for-the-badge)](#)
-
 PulseMind AI is a full-stack, enterprise-ready **Sentiment Intelligence Platform** designed to extract, analyze, and visualize emotional context and public opinion from unstructured text data (social media posts, customer reviews, product feedback, support tickets, and short-form documents).
 
 Using Natural Language Processing (NLP) and Machine Learning, PulseMind AI classifies text into **Positive**, **Neutral**, or **Negative** sentiment with a calculated prediction confidence percentage.
 
 The application features a sleek SaaS design inspired by modern tools like Linear, Cursor, and GitHub Dark.
 
----
 
-## 📸 Platform Screenshots
-
-### Home Page & Real-Time Analyzer
-![Home Page](screenshots/home.png)
-
-### Real-Time Sentiment Prediction Output
-![Sentiment Prediction Output](screenshots/prediction.png)
-
-### Analytics Dashboard & KPI Metrics
-![Analytics Dashboard](screenshots/dashboard.png)
-
-### Batch CSV Data Analysis
-![CSV Batch Processor](screenshots/upload.png)
-
-### Machine Learning Pipeline & Engine Architecture
-![About ML Engine](screenshots/about.png)
-
----
 
 ## 📋 Table of Contents
 - [🎯 Project Overview & Vision](#-project-overview--vision)
@@ -227,31 +202,4 @@ Open your browser and navigate to `http://127.0.0.1:5000` to start analyzing tex
 
 ---
 
-## 🌐 Cloud Deployment Guide
-
-PulseMind AI is production-ready for deployment on **Render**, **Railway**, or **DigitalOcean**:
-
-### Deployment to Render.com (Free Tier)
-1. Push your code repository to GitHub.
-2. Sign in to [Render.com](https://render.com) and click **New +** → **Web Service**.
-3. Connect your GitHub repository.
-4. Configure service parameters:
-   - **Environment**: `Python 3`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn wsgi:app`
-5. Click **Create Web Service**. Your application will be live with free SSL HTTPS certificates!
-
----
-
-## 📜 License & Contributing
-
-This project is open-source under the [MIT License](LICENSE).  
-We welcome contributions! Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for environment setup rules and PR guidelines. See [CHANGELOG.md](CHANGELOG.md) for version release notes.
-
----
-
-## 👤 Author
-
-**PulseMind AI Engineering Team**
-- GitHub: [@PulseMind-AI](https://github.com/)
-- Project Repository: [PulseMind-AI](https://github.com/)
+eMind-AI](https://github.com/)
