@@ -17,8 +17,8 @@
 <!-- Hero Header Section -->
 <section class="hero">
     <h1>PulseMind AI</h1>
-    <p style="margin-top: 15px; margin-bottom: 15px;">Analyze emotions, opinions, and customer sentiment using advanced Natural Language Processing and Machine Learning. Gain meaningful insights from social media posts, reviews, feedback, and textual data through an elegant AI-powered analytics platform.</p>
-    <p style="margin-top: 10px; font-size: 1.05rem;">
+    <p style="margin-top: 12px; margin-bottom: 12px;">Real-time text sentiment classification powered by Machine Learning &amp; Natural Language Processing.</p>
+    <p style="margin-top: 8px; font-size: 1rem;">
         <span class="typing-container"></span>
     </p>
 </section>
@@ -29,7 +29,7 @@
         <textarea 
             id="tweetInput" 
             class="tweet-textarea" 
-            placeholder="Type or paste a social media post, customer review, product feedback, article, message, or text up to 10,000 characters here..." 
+            placeholder="Type or paste any post, review, feedback, or text up to 10,000 characters here..." 
             maxlength="10000"
             {% if not model_loaded %}disabled{% endif %}
         ></textarea>
@@ -38,9 +38,9 @@
     
     <!-- Example Preset Texts -->
     <div class="examples-grid">
-        <button class="example-btn" data-tweet="I absolutely love this new application! The interface is so smooth and clean. 😊" {% if not model_loaded %}disabled{% endif %}>😊 Positive Review</button>
-        <button class="example-btn" data-tweet="Just waiting at the airport. My flight has been delayed by 2 hours. Super annoying. 🙄" {% if not model_loaded %}disabled{% endif %}>😡 Negative Feedback</button>
-        <button class="example-btn" data-tweet="Standard morning coffee. Today's weather is cloudy with a light breeze." {% if not model_loaded %}disabled{% endif %}>😐 Neutral Comment</button>
+        <button class="example-btn" data-tweet="I absolutely love this new application! The interface is so smooth and clean. 😊" {% if not model_loaded %}disabled{% endif %}>😊 Positive Example</button>
+        <button class="example-btn" data-tweet="Just waiting at the airport. My flight has been delayed by 2 hours. Super annoying. 🙄" {% if not model_loaded %}disabled{% endif %}>😡 Negative Example</button>
+        <button class="example-btn" data-tweet="Standard morning coffee. Today's weather is cloudy with a light breeze." {% if not model_loaded %}disabled{% endif %}>😐 Neutral Example</button>
     </div>
     
     <!-- Submit Button Group -->
@@ -57,7 +57,7 @@
     <div class="loader"></div>
 </div>
 
-<!-- Glassmorphism Results Card -->
+<!-- Results Card -->
 <div class="glass-card results-card" id="resultsCard">
     <div class="result-content">
         <h3>Analysis Result</h3>

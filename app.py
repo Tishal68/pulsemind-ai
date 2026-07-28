@@ -449,9 +449,6 @@ def export_history():
                                error_title='Export Failed',
                                error_message=f'Could not export prediction logs: {str(e)}'), 500
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
 
 # Global HTTP Error Handlers
 @app.errorhandler(400)

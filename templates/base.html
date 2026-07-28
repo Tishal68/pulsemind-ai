@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}PulseMind AI - Sentiment Intelligence Platform{% endblock %}</title>
+    <title>{% block title %}PulseMind AI{% endblock %}</title>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
     <!-- Bootstrap Icons CDN -->
@@ -16,10 +16,10 @@
 </head>
 <body>
 
-    <!-- Sticky Navigation Bar -->
+    <!-- Navigation Bar -->
     <nav class="navbar">
         <a href="/" class="nav-brand">
-            <img src="{{ url_for('static', filename='images/logo-light.svg') }}" id="navbarLogo" alt="PulseMind AI Logo" height="34">
+            <img src="{{ url_for('static', filename='images/logo-light.svg') }}" id="navbarLogo" alt="PulseMind AI Logo" height="32">
         </a>
         
         <ul class="nav-links">
@@ -30,10 +30,7 @@
                 <a href="/upload">Batch Analysis</a>
             </li>
             <li class="nav-item {% if request.path == '/dashboard' %}active{% endif %}">
-                <a href="/dashboard">Analytics Dashboard</a>
-            </li>
-            <li class="nav-item {% if request.path == '/about' %}active{% endif %}">
-                <a href="/about">About Engine</a>
+                <a href="/dashboard">Dashboard</a>
             </li>
             <li class="nav-item">
                 <button class="theme-toggle-btn" id="themeToggle" title="Toggle Light/Dark Theme">
@@ -53,7 +50,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 PulseMind AI. Powered by Sentiment Intelligence. | <a href="/about">How it works</a></p>
+        <p>&copy; 2026 PulseMind AI. Machine Learning Sentiment Analysis Project.</p>
     </footer>
 
     <!-- Custom JS -->
