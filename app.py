@@ -1,19 +1,25 @@
 import os
 import re
 import sys
+import uuid
 import datetime
 import sqlite3
 import joblib
 import pandas as pd
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, session
 from werkzeug.utils import secure_filename
-
-
 
 # Import our custom preprocessor
 from utils import TextPreprocessor
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'pulsemind_session_secret_key_2026')
+
+def get_user_session_id():
+    """Retrieve or assign a unique session ID per visitor/device."""
+    if 'user_id' not in session:
+        session['user_id'] = str(uuid.uuid4())
+    return session['user_id']
 
 # Config
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -54,13 +60,14 @@ def load_ml_model():
 
 # Database setup
 def init_db():
-    """Initialize the SQLite database for prediction history."""
+    """Initialize the SQLite database for prediction history with session isolation."""
     try:
         conn = sqlite3.connect(DATABASE_PATH)
         cursor = conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS predictions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT NOT NULL DEFAULT 'global',
                 tweet TEXT NOT NULL,
                 sentiment TEXT NOT NULL,
                 confidence REAL NOT NULL,
@@ -68,9 +75,16 @@ def init_db():
                 time TEXT NOT NULL
             )
         ''')
+        
+        # Migration check: Ensure user_id column exists
+        cursor.execute("PRAGMA table_info(predictions)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if 'user_id' not in columns:
+            cursor.execute("ALTER TABLE predictions ADD COLUMN user_id TEXT NOT NULL DEFAULT 'global'")
+            
         conn.commit()
         conn.close()
-        print("SQLite Database initialized successfully.")
+        print("SQLite Database initialized with session isolation support.")
     except Exception as e:
         print(f"Database initialization error: {e}", file=sys.stderr)
 
@@ -129,7 +143,8 @@ def predict():
             sentiment = model.classes_[max_idx]
             confidence = float(probs[max_idx] * 100) # Percentage
             
-        # Log to Database
+        # Log to Database with user session isolation
+        user_id = get_user_session_id()
         now = datetime.datetime.now()
         date_str = now.strftime('%Y-%m-%d')
         time_str = now.strftime('%H:%M:%S')
@@ -137,8 +152,8 @@ def predict():
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
-            'INSERT INTO predictions (tweet, sentiment, confidence, date, time) VALUES (?, ?, ?, ?, ?)',
-            (tweet_text, sentiment, round(confidence, 2), date_str, time_str)
+            'INSERT INTO predictions (user_id, tweet, sentiment, confidence, date, time) VALUES (?, ?, ?, ?, ?, ?)',
+            (user_id, tweet_text, sentiment, round(confidence, 2), date_str, time_str)
         )
         conn.commit()
         row_id = cursor.lastrowid
@@ -239,24 +254,26 @@ def upload():
                 probs = model.predict_proba(vec)[0]
                 max_idx = probs.argmax()
                 sentiment = model.classes_[max_idx]
-                confidence = float(probs[max_idx] * 100)
-                
-            predictions_labels.append(sentiment)
-            confidences.append(round(confidence, 2))
+        db_rows = []
+        
+        for i in range(len(valid_rows)):
+            max_idx = probs[i].argmax()
+            sentiment = model.classes_[max_idx]
+            confidence = round(float(probs[i][max_idx] * 100), 2)
+            tweet_val = str(valid_rows[i][text_col])
             
-            # Save predictions to list
             results.append({
                 'tweet': tweet_val,
                 'sentiment': sentiment,
-                'confidence': round(confidence, 2)
+                'confidence': confidence
             })
             
-            # Save prediction to DB
-            cursor.execute(
-                'INSERT INTO predictions (tweet, sentiment, confidence, date, time) VALUES (?, ?, ?, ?, ?)',
-                (tweet_val, sentiment, round(confidence, 2), date_str, time_str)
-            )
+            db_rows.append((user_id, tweet_val, sentiment, confidence, date_str, time_str))
             
+        cursor.executemany(
+            'INSERT INTO predictions (user_id, tweet, sentiment, confidence, date, time) VALUES (?, ?, ?, ?, ?, ?)',
+            db_rows
+        )
         conn.commit()
         conn.close()
         
@@ -295,13 +312,14 @@ def dashboard():
 
 @app.route('/dashboard/stats')
 def dashboard_stats():
-    """Retrieve database metrics and aggregate charts data."""
+    """Retrieve database metrics and aggregate charts data filtered by user session."""
     try:
+        user_id = get_user_session_id()
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # 1. Basic Stats
-        cursor.execute("SELECT COUNT(*) FROM predictions")
+        # 1. Basic Stats for current user session
+        cursor.execute("SELECT COUNT(*) FROM predictions WHERE user_id = ?", (user_id,))
         total_predictions = cursor.fetchone()[0]
         
         if total_predictions == 0:
@@ -319,7 +337,7 @@ def dashboard_stats():
             })
             
         # Count by sentiment
-        cursor.execute("SELECT sentiment, COUNT(*), AVG(confidence) FROM predictions GROUP BY sentiment")
+        cursor.execute("SELECT sentiment, COUNT(*), AVG(confidence) FROM predictions WHERE user_id = ? GROUP BY sentiment", (user_id,))
         sentiment_data = cursor.fetchall()
         
         sentiment_counts = {'Positive': 0, 'Neutral': 0, 'Negative': 0}
@@ -332,11 +350,11 @@ def dashboard_stats():
                 sentiment_conf[sent] = round(row[2], 2)
                 
         # Average overall confidence
-        cursor.execute("SELECT AVG(confidence) FROM predictions")
+        cursor.execute("SELECT AVG(confidence) FROM predictions WHERE user_id = ?", (user_id,))
         avg_confidence = round(cursor.fetchone()[0], 2)
         
         # 2. Line Chart data (Grouped by Date)
-        cursor.execute("SELECT date, COUNT(*) FROM predictions GROUP BY date ORDER BY date DESC LIMIT 10")
+        cursor.execute("SELECT date, COUNT(*) FROM predictions WHERE user_id = ? GROUP BY date ORDER BY date DESC LIMIT 10", (user_id,))
         line_data = cursor.fetchall()
         line_labels = [row[0] for row in reversed(line_data)]
         line_counts = [row[1] for row in reversed(line_data)]
@@ -345,12 +363,11 @@ def dashboard_stats():
         bar_data = [sentiment_conf['Positive'], sentiment_conf['Neutral'], sentiment_conf['Negative']]
         
         # 4. Word Cloud data
-        cursor.execute("SELECT tweet FROM predictions")
+        cursor.execute("SELECT tweet FROM predictions WHERE user_id = ?", (user_id,))
         tweets = cursor.fetchall()
         
-        # Aggregate word count (simple client-safe text parsing)
+        # Aggregate word count
         word_freq = {}
-        # Simple stop words lists for clean clouds without full nltk overhead if loaded
         local_stops = {'the', 'a', 'to', 'and', 'is', 'in', 'it', 'you', 'of', 'for', 'on', 'my', 'that', 'at', 'with', 'this', 'me', 'i', 'have', 'so', 'just', 'be', 'but', 'was', 'your'}
         if preprocessor:
             local_stops = local_stops.union(preprocessor.stop_words)
@@ -362,12 +379,11 @@ def dashboard_stats():
                 if len(w) > 2 and w not in local_stops:
                     word_freq[w] = word_freq.get(w, 0) + 1
                     
-        # Sort and take top 40 words
         sorted_words = sorted(word_freq.items(), key=lambda x: x[1], reverse=True)[:40]
         word_cloud = [{'text': word, 'value': count} for word, count in sorted_words]
         
         # 5. Recent predictions list (Limit 50)
-        cursor.execute("SELECT id, tweet, sentiment, confidence, date, time FROM predictions ORDER BY id DESC LIMIT 50")
+        cursor.execute("SELECT id, tweet, sentiment, confidence, date, time FROM predictions WHERE user_id = ? ORDER BY id DESC LIMIT 50", (user_id,))
         recent_rows = cursor.fetchall()
         recent = []
         for r in recent_rows:
@@ -402,15 +418,16 @@ def dashboard_stats():
 
 @app.route('/history/delete', methods=['POST'])
 def delete_history():
-    """Delete a single prediction history entry."""
+    """Delete a single prediction history entry for the current user session."""
     data = request.get_json()
     if not data or 'id' not in data:
         return jsonify({'status': 'error', 'message': 'Missing record ID.'}), 400
         
     try:
+        user_id = get_user_session_id()
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM predictions WHERE id = ?", (data['id'],))
+        cursor.execute("DELETE FROM predictions WHERE id = ? AND user_id = ?", (data['id'], user_id))
         conn.commit()
         conn.close()
         return jsonify({'status': 'success', 'message': 'Record deleted successfully.'})
@@ -419,11 +436,12 @@ def delete_history():
 
 @app.route('/history/clear', methods=['POST'])
 def clear_history():
-    """Clear all prediction history."""
+    """Clear prediction history for the current user session."""
     try:
+        user_id = get_user_session_id()
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM predictions")
+        cursor.execute("DELETE FROM predictions WHERE user_id = ?", (user_id,))
         conn.commit()
         conn.close()
         return jsonify({'status': 'success', 'message': 'History cleared successfully.'})
@@ -432,10 +450,11 @@ def clear_history():
 
 @app.route('/history/export')
 def export_history():
-    """Export prediction history database to a downloadable CSV."""
+    """Export prediction history database to a downloadable CSV for current user session."""
     try:
+        user_id = get_user_session_id()
         conn = get_db_connection()
-        df = pd.read_sql_query("SELECT id, tweet, sentiment, confidence, date, time FROM predictions ORDER BY id DESC", conn)
+        df = pd.read_sql_query("SELECT id, tweet, sentiment, confidence, date, time FROM predictions WHERE user_id = ? ORDER BY id DESC", conn, params=(user_id,))
         conn.close()
         
         export_filename = f"prediction_history_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
@@ -448,6 +467,7 @@ def export_history():
                                error_code='EXPORT_FAILED',
                                error_title='Export Failed',
                                error_message=f'Could not export prediction logs: {str(e)}'), 500
+
 
 
 # Global HTTP Error Handlers
